@@ -1,0 +1,31 @@
+DirectoryIndex api-version-check.php
+
+ErrorDocument 404 '{"errors":[{"code":"NOT_FOUND","message":"something was not found!","detail":"unknown"}]}'
+
+Header always set Docker-Distribution-Api-Version "registry/2.0"
+
+# otherwise fread from php://input only returns 8192 max bytes
+# the default setting on hetzner seems to be wrong
+php_value upload_tmp_dir "/usr/www/users/myrde/v2/tmp"
+
+# Basic Auth protected or not, also includes uploads, be careful!
+# Require valid-user
+
+RewriteEngine On
+RewriteBase "/v2"
+
+# Router
+RewriteCond %{REQUEST_METHOD} GET
+RewriteRule "^(.+)/tags/list" "tags.php?name=$1"
+
+RewriteCond %{REQUEST_METHOD} GET|PUT
+RewriteRule "^(.+)/manifests/(.+)" "manifests.php?name=$1&reference=$2"
+
+RewriteCond %{REQUEST_METHOD} POST
+RewriteRule "^(.+)/blobs/(.+):(.+)" "blobs/$2/$3"
+
+RewriteCond %{REQUEST_METHOD} GET|HEAD
+RewriteRule "^(.+)/blobs/(.+):(.+)" "blobs/$2/$3"
+
+RewriteCond %{REQUEST_METHOD} POST|PUT|PATCH
+RewriteRule "^(.+)/blobs/uploads/(.+)?" "blob-uploads.php?name=$1&uuid=$2" [QSA]

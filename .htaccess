@@ -1,0 +1,7 @@
+AuthType Basic
+AuthName registry.m3y3r.de
+
+AuthBasicProvider file
+AuthUserFile "/usr/www/users/myrde/registry/.htpasswd"
+
+ErrorDocument 401 '{"errors":[{"code":"UNAUTHORIZED","message":"authentication required","detail":null}]}'
