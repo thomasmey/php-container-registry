@@ -91,7 +91,7 @@ function getManifest($name, $reference, $httpAccept) {
       $fileTypes = getFileTypesFromAccept($httpAccept);
    
       foreach ($fileTypes as $fileType) {
-         foreach($digests as $digest) {
+         foreach(array_reverse($digests) as $digest) {
             $digestType = $digest2Type[$digest];
             if($digestType === $fileType) {
               $contentDigest = $digest;
@@ -133,7 +133,7 @@ $reference = $qp['reference']; // tag or digest
 
 $requestMethod = getenv('REQUEST_METHOD');
 
-if ($requestMethod === 'GET') {
+if ($requestMethod === 'GET' || $requestMethod === 'HEAD') {
   $httpAccept = getenv('HTTP_ACCEPT');
   getManifest($name, $reference, $httpAccept);
 } else if ($requestMethod === 'PUT') {

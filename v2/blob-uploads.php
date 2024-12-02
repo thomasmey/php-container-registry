@@ -21,7 +21,6 @@ function startUpload($name) {
   file_put_contents($fileName . ".json", json_encode($uploadMeta));
 
   header("Location: /v2/$name/blobs/uploads/$uuid");
-  header("Range: bytes=0-0");
   header("Content-Length: 0");
   header("Docker-Upload-UUID: $uuid");
   http_response_code(202);
@@ -47,8 +46,9 @@ function patchUpload($name, $uuid) {
   file_put_contents($fileName . ".json", json_encode($uploadMeta));
 
   header("Location: /v2/$name/blobs/uploads/$uuid");
-  header("Range: bytes=0-" . filesize($fileName . ".bin"));
+  header("Range: 0-" . filesize($fileName . ".bin"));
   header("Content-Length: 0");
+  header("Content-Type: ");
   header("Docker-Upload-UUID: $uuid");
   http_response_code(202);
 }
@@ -65,7 +65,7 @@ function completeUpload($name, $uuid, $digest) {
   unlink($fileName . ".json");
 
   header("Location: /v2/$name/blobs/sha256:$hv");
-  header("Range: bytes=0-" . filesize($fileNameNew));
+  header("Range: 0-" . filesize($fileNameNew));
   header("Content-Length: 0");
   header("Docker-Content-Digest: $hv");
   http_response_code(201);
