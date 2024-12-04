@@ -46,7 +46,7 @@ function patchUpload($name, $uuid) {
   file_put_contents($fileName . ".json", json_encode($uploadMeta));
 
   header("Location: /v2/$name/blobs/uploads/$uuid");
-  header("Range: 0-" . filesize($fileName . ".bin"));
+  header("Range: 0-" . (filesize($fileName . ".bin") - 1));
   header("Content-Length: 0");
   header("Content-Type: ");
   header("Docker-Upload-UUID: $uuid");
@@ -54,6 +54,8 @@ function patchUpload($name, $uuid) {
 }
 
 function completeUpload($name, $uuid, $digest) {
+  // TODO: process more upload data here!
+  // TODO: if digest query parameter does exists, also compare with calculated one!
   $documentRoot = getenv('DOCUMENT_ROOT');
   $fileName = "$documentRoot/v2/blobs/uploads/$uuid";
   $uploadMeta = json_decode(file_get_contents($fileName . ".json"), true);
@@ -65,7 +67,7 @@ function completeUpload($name, $uuid, $digest) {
   unlink($fileName . ".json");
 
   header("Location: /v2/$name/blobs/sha256:$hv");
-  header("Range: 0-" . filesize($fileNameNew));
+  header("Range: 0-" . (filesize($fileNameNew) - 1));
   header("Content-Length: 0");
   header("Docker-Content-Digest: $hv");
   http_response_code(201);
